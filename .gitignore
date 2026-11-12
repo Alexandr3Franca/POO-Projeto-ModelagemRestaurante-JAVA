@@ -1,0 +1,15 @@
+# Arquivos compilados
+*.class
+
+# Pastas de output/compilação
+bin/
+out/
+
+# Configurações de IDEs
+.vscode/
+.idea/
+*.iml
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
