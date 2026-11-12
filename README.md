@@ -10,9 +10,9 @@ O projeto consiste no desenvolvimento iterativo e incremental de um sistema para
 
 \## 👥 Integrantes do Grupo
 
-\* \*\*Nome da Pessoa 1\*\* - \*Foco: Modelagem UML, Núcleo de Pedidos e Cardápio.\*
+\* \*\*Alexandre França \*\* - \*Foco: Modelagem UML, Núcleo de Pedidos e Cardápio.\*
 
-\* \*\*Nome da Pessoa 2\*\* - \*Foco: Modelagem UML, Hierarquia de Funcionários e Formas de Pagamento.\*
+\* \*\*Ana Laysa Carvalho\*\* - \*Foco: Modelagem UML, Hierarquia de Funcionários e Formas de Pagamento.\*
 
 
 
@@ -62,7 +62,7 @@ java -cp bin principal.Main
 
 📌 Premissas e Decisões de Projeto (Entrega 1)
 
-O documento de regras de negócio apresenta lacunas intencionais. Para a modelagem e codificação desta primeira etapa, o grupo adotou as seguintes premissas:
+O documento de regras de negócio apresenta lacunas intencionais. Para a modelagem e codificação desta primeira etapa, foram adotadas as seguintes premissas:
 
 
 
