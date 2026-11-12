@@ -1,0 +1,112 @@
+classDiagram
+    %% Interface e Pagamento
+    class FormaPagamento {
+        <<interface>>
+        +processarPagamento(valor: double): boolean
+    }
+    
+    class Cartao {
+        +processarPagamento(valor: double): boolean
+    }
+    class Cheque {
+        +processarPagamento(valor: double): boolean
+    }
+    class Dinheiro {
+        +processarPagamento(valor: double): boolean
+    }
+    FormaPagamento <|.. Cartao
+    FormaPagamento <|.. Cheque
+    FormaPagamento <|.. Dinheiro
+
+    %% Itens do Cardápio (Superclasse e Subclasses)
+    class ItemCardapio {
+        <<abstract>> %% ADICIONADO AQUI
+        -nome: String
+        -preco: double
+        -diaDisponivel: String
+        +ItemCardapio(nome: String, preco: double, diaDisponivel: String)
+        +getNome(): String
+        +getPreco(): double
+    }
+    class Prato {
+        -pontoCarne: String
+    }
+    class Bebida {
+        -comGelo: boolean
+    }
+    ItemCardapio <|-- Prato
+    ItemCardapio <|-- Bebida
+
+    %% Hierarquia de Funcionários (Classe Abstrata)
+    class Funcionario {
+        <<abstract>>
+        -id: int
+        -nome: String
+        +Funcionario(id: int, nome: String)
+        +getNome(): String
+    }
+    
+    class Garcom {
+        -exclusivoBebida: boolean
+        +Garcom(id: int, nome: String, exclusivoBebida: boolean)
+        +isExclusivoBebida(): boolean
+    }
+    
+    class Telefonista {
+        %% ADICIONADO AQUI
+        +Telefonista(id: int, nome: String)
+    }
+    
+    class Entregador {
+        -rotaAtual: String
+        +realizarEntrega(pedidos: List~Pedido~): void
+    }
+    
+    class Gerente {
+        +emitirOrdem(funcionario: Funcionario, ordem: String): void
+    }
+    
+    class Manobrista {
+        +buscarAutomovel(cliente: Cliente): void
+    }
+    
+    Funcionario <|-- Garcom
+    Funcionario <|-- Telefonista
+    Funcionario <|-- Entregador
+    Funcionario <|-- Gerente
+    Funcionario <|-- Manobrista
+
+    %% Classes Principais codificadas no Módulo de Pedidos
+    class Cliente {
+        -id: int
+        -nome: String
+        +Cliente(id: int, nome: String)
+        +getNome(): String
+    }
+
+    class Pedido {
+        -id: int
+        -cliente: Cliente
+        -atendente: Funcionario
+        -itens: List~ItemCardapio~
+        -devolvido: boolean
+        +Pedido(id: int, cliente: Cliente, atendente: Funcionario)
+        +adicionarItem(item: ItemCardapio): void
+        +registrarDevolucao(): void
+        +exibirResumo(): void
+    }
+
+    class Nota {
+        -valorTotal: double
+        -tempoAtendimento: int
+        -tempoPermanencia: int
+        +calcularTotal(): double
+        +emitirNota(pagamento: FormaPagamento): void
+    }
+
+    %% Relacionamentos atualizados com as regras de negócio e o código
+    Cliente "1" -- "1..*" Pedido : faz >
+    Pedido "*" -- "1" Funcionario : atende >
+    Pedido "1" o-- "*" ItemCardapio : agrega >
+    Nota "1" -- "1..*" Pedido : consolida >
+    Nota ..> FormaPagamento : depende >
