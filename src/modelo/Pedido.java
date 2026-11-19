@@ -120,5 +120,8 @@ public class Pedido {
     public void setEnderecoEntrega(Endereco enderecoEntrega) {
         this.enderecoEntrega = enderecoEntrega;
     }
+    private boolean pago = false;
+    public boolean isPago() { return pago; }
+    public void setPago(boolean pago) { this.pago = pago; }
     
 }
