@@ -20,13 +20,12 @@ classDiagram
 
     %% Itens do Cardápio (Superclasse e Subclasses)
     class ItemCardapio {
-        <<abstract>> %% ADICIONADO AQUI
+        <<abstract>>
         -nome: String
         -preco: double
         -diaDisponivel: String
         +ItemCardapio(nome: String, preco: double, diaDisponivel: String)
-        +getNome(): String
-        +getPreco(): double
+        +VerificarDisponibilidade(diaAtual: String): boolean
     }
     class Prato {
         -pontoCarne: String
@@ -43,7 +42,6 @@ classDiagram
         -id: int
         -nome: String
         +Funcionario(id: int, nome: String)
-        +getNome(): String
     }
     
     class Garcom {
@@ -53,12 +51,12 @@ classDiagram
     }
     
     class Telefonista {
-        %% ADICIONADO AQUI
         +Telefonista(id: int, nome: String)
     }
     
     class Entregador {
         -rotaAtual: String
+        -disponivel: boolean
         +realizarEntrega(pedidos: List~Pedido~): void
     }
     
@@ -76,37 +74,104 @@ classDiagram
     Funcionario <|-- Gerente
     Funcionario <|-- Manobrista
 
-    %% Classes Principais codificadas no Módulo de Pedidos
+    %% Estrutura Física e Localização
+    class Endereco {
+        -rua: String
+        -numero: int
+        -bairro: String
+        +Endereco(rua: String, numero: int, bairro: String)
+        +getEnderecoCompleto(): String
+    }
+
+    class Mesa {
+        -numero: int
+        -ocupada: boolean
+        -horaChegada: LocalDateTime
+        +Mesa(numero: int)
+        +ocupar(chegada: LocalDateTime): void
+        +liberar(): void
+        +isOcupada(): boolean
+    }
+
+    class Regiao {
+        -nome: String
+        -mesas: List~Mesa~
+        -garcons: List~Garcom~
+        +Regiao(nome: String)
+        +adicionarMesa(mesa: Mesa): void
+        +adicionarGarcom(garcom: Garcom): void
+    }
+
+    %% Classes Pedidos e fechamento
     class Cliente {
         -id: int
         -nome: String
+        -endereco: Endereco
         +Cliente(id: int, nome: String)
-        +getNome(): String
+        +Cliente(id: int, nome: String, endereco: Endereco)
+    }
+
+    class ItemPedido {
+        -item: ItemCardapio
+        -devolvido: boolean
+        -motivoDevolucao: String
+        +ItemPedido(item: ItemCardapio)
+        +registrarDevolucao(motivo: String): void
     }
 
     class Pedido {
         -id: int
         -cliente: Cliente
         -atendente: Funcionario
-        -itens: List~ItemCardapio~
-        -devolvido: boolean
+        -itens: List~ItemPedido~
+        -mesa: Mesa
+        -enderecoEntrega: Endereco
+        -horaPedido: LocalDateTime
+        -horaEntrega: LocalDateTime
+        -dataHoraAgendada: LocalDateTime
+        -pago: boolean
         +Pedido(id: int, cliente: Cliente, atendente: Funcionario)
         +adicionarItem(item: ItemCardapio): void
-        +registrarDevolucao(): void
+        +registrarEntrega(horaEntrega: LocalDateTime): void
+        +calcularTempoAtendimento(): long
+        +calcularTotal(): double
         +exibirResumo(): void
+        +isPago(): boolean
+        +setPago(pago: boolean): void
     }
 
     class Nota {
+        -pedidos: List~Pedido~
+        -cliente: Cliente
         -valorTotal: double
-        -tempoAtendimento: int
-        -tempoPermanencia: int
+        -tempoAtendimento: double
+        -tempoPermanencia: long
+        +Nota(cliente: Cliente, pedidos: List~Pedido~)
         +calcularTotal(): double
-        +emitirNota(pagamento: FormaPagamento): void
+        +calcularTempoMedioAtendimento(): double
+        +calcularTempoPermanencia(): long
+        +emitirNota(pagamento: FormaPagamento, gerente: Gerente, manobrista: Manobrista): void
     }
 
-    %% Relacionamentos atualizados com as regras de negócio e o código
+    %% Relacionamentos 
+    Cliente "1" --> "0..1" Endereco : possui
     Cliente "1" -- "1..*" Pedido : faz >
     Pedido "*" -- "1" Funcionario : atende >
     Pedido "1" o-- "*" ItemCardapio : agrega >
-    Nota "1" -- "1..*" Pedido : consolida >
-    Nota ..> FormaPagamento : depende >
+    Pedido "*" --> "0..1" Endereco : entrega em
+    Pedido "1" *-- "1..*" ItemPedido : compõe
+    ItemPedido "*" --> "1" ItemCardapio : referencia
+
+    Regiao "1" o-- "1..*" Mesa : agrupa
+    Regiao "1" o-- "1..*" Garcom : aloca
+
+    Entregador ..> Pedido : entrega
+    Gerente ..> Funcionario : ordena
+    Gerente ..> Manobrista : aciona
+    Manobrista ..> Cliente : busca carro de
+
+    Nota "1" -- "1..*" Pedido : consolida
+    Nota "*" --> "1" Cliente : emitida para
+    Nota ..> FormaPagamento : depende
+    Nota ..> Gerente : notifica
+    Nota ..> Manobrista : repassa
